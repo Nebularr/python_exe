@@ -1,0 +1,86 @@
+"""
+UDP聊天客户端
+version:1.1
+author:Nebularr
+功能：收发数据
+更新内容：
+1.实现IP地址以及端口的默认设置，省去需要重复输入的麻烦，而可以实现修改IP以及端口。
+2.自定义绑定本机端口号和IP
+
+"""
+
+import socket
+
+
+def send_msg(udp_socket, dest_ip, dest_port):
+    """"发送消息"""
+    # 从键盘获取数据
+    send_data = input("请输入要发送的数据：")
+    # 使用套接字收发数据
+    udp_socket.sendto(send_data.encode("utf-8"), (dest_ip, int(dest_port)))
+
+
+def recv_msg(udp_socket):
+    """接收数据"""
+    recv_data = udp_socket.recvfrom(1024)
+    recv_msg = recv_data[0]
+    send_addr = recv_data[1]
+
+    print("Receive massage from:IP[%s],PORT[%s]: %s" %
+          (str(send_addr[0]), str(send_addr[1]), recv_msg.decode("utf-8")))
+
+
+def main():
+    while True:
+        # 默认ip和端口标志
+        flag = 0
+        #  创建一个udp套接字
+        print("*****UDP聊天系统*****")
+
+        udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        host_ip = input("请输入本机IP：")
+        host_port = input("请输入本机端口号：")
+        #  绑定IP和PORT
+        local_addr = (host_ip, int(host_port))
+        udp_socket.bind(local_addr)
+
+
+        dest_ip = input("请输入对方的IP:")
+        dest_port = input("请输入对方的端口:")
+        print("1.发送数据")
+        print("2.接收数据")
+        print("3.修改IP和端口")
+        print("4.退出系统")
+
+
+        while True:
+
+            op = input("请输入功能对应的数字：")
+            if op == "1":
+                # 发送
+                send_msg(udp_socket, dest_ip, dest_port)
+            elif op == "2":
+                # 接收
+                recv_msg(udp_socket)
+            elif op == "3":
+                print("####开始修改IP和端口####")
+                break
+            elif op == "4":
+                flag = 1
+                print("欢迎再次使用！")
+                break
+
+            else:
+                print("输入错误，请重新输入！")
+
+
+        # 关闭套接字
+        udp_socket.close()
+        #修改标志，推出系统
+        if flag == 1:
+            break
+
+
+
+if __name__ == "__main__":
+    main()
